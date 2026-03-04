@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星際閃避：霓虹覺醒 - 遊戲產品提案</title>
+    <!-- 引入與遊戲相同的字型庫 -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #03030a;
+            --neon-blue: #00f0ff;
+            --neon-purple: #b026ff;
+            --neon-red: #ff003c;
+            --text-main: #f0f8ff;
+            --text-muted: #8b9bb4;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Chakra Petch', sans-serif;
+            overflow: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* 背景特效 */
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(176, 38, 255, 0.05), transparent 30%);
+        }
+
+        /* 輪播容器 (Scroll Snapping) */
+        .presentation {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .presentation::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Chrome */
+
+        /* 幻燈片單頁 */
+        .slide {
+            flex: 0 0 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 卡片設計 (Glassmorphism) */
+        .content-card {
+            background: rgba(10, 15, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 3rem 4rem;
+            max-width: 900px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1,
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 0;
+        }
+
+        /* 標題發光 */
+        .title-glow {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 30px var(--neon-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--neon-purple);
+            border-bottom: 2px solid rgba(176, 38, 255, 0.3);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            display: inline-block;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .highlight {
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .highlight-blue {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+
+        .highlight-red {
+            color: var(--neon-red);
+            text-shadow: 0 0 8px rgba(255, 0, 60, 0.6);
+        }
+
+        /* 頁面控制器 */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-btn:hover {
+            color: var(--neon-blue);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* 兩欄排版 */
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .icon-box {
+            font-size: 3rem;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .icon-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            border-color: var(--neon-blue);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-layer"></div>
+
+    <div class="presentation" id="slidesContainer">
+
+        <!-- Slide 1: 封面 -->
+        <div class="slide" id="slide-0">
+            <div class="content-card" style="text-align: center;">
+                <h1 class="title-glow">NEON DODGE</h1>
+                <div class="subtitle">星際閃避：霓虹覺醒</div>
+                <p
+                    style="color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    純粹依靠反應與專注，結合震撼玻璃擬物化與雷射特效的賽博龐克生存遊戲。<br>
+                    一款為休閒玩家與硬派挑戰者量身打造的極致閃避體驗。
+                </p>
+                <div style="margin-top: 3rem; font-family: 'Orbitron', sans-serif; color: var(--neon-purple);">
+                    > SWIPE / SCROLL TO INITIATE SEQUENCE < </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: 核心玩法 -->
+            <div class="slide" id="slide-1">
+                <div class="content-card">
+                    <h2>CORE GAMEPLAY // 核心玩法</h2>
+                    <div class="split-layout">
+                        <div>
+                            <ul>
+                                <li><span class="highlight">直覺的操作體驗：</span>捨棄繁雜的輸入介面，遊戲全面採用純 <span
+                                        class="highlight-blue">WASD</span> 鍵盤控制。我們將飛船機動性調校至滑順與精準之間的完美平衡。</li>
+                                <li><span class="highlight">無止盡的生存挑戰：</span>挑戰者需躲避不斷從上方落下的<span
+                                        class="highlight-red">隕石風暴</span>。活得越久，難度曲線急遽提升（隕石速度與生成頻率遞增），創造容易上手卻難以精通的「再玩一局」成癮感。
+                                </li>
+                                <li><span class="highlight">動態計分系統：</span>以「存活時間」來量化您的實力，自動記錄突破極限的 최고分數 (High Score)。
+                                </li>
+                            </ul>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="icon-box" style="color: #00f0ff; border-color: rgba(0, 240, 255, 0.3);">
+                                ⌨️<br><span style="font-size: 1rem; font-family: 'Orbitron';">WASD CONSTANT</span>
+                            </div>
+                            <div class="icon-box" style="color: #ff003c; border-color: rgba(255, 0, 60, 0.3);">
+                                ☄️<br><span style="font-size: 1rem; font-family: 'Orbitron';">METEOR STORM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: 視覺饗宴 -->
+            <div class="slide" id="slide-2">
+                <div class="content-card">
+                    <h2 style="color: var(--neon-blue); border-color: var(--neon-blue);">AESTHETICS // 次世代視覺設計</h2>
+                    <ul>
+                        <li><span class="highlight">Glassmorphism (玻璃擬物化 UI)：</span>結合半透明磨砂玻璃與邊緣反光，打造出現代而高質感的科幻駕駛艙面板。
+                        </li>
+                        <li><span class="highlight">多層次視差星空 (Parallax Background)：</span>背景採用 3
+                            層不同速度與大小的星空圖層連動，當飛船移動與推進時，帶來極具深度的宇宙沉浸感。</li>
+                        <li><span class="highlight">豐富的光效粒子 (Particle
+                                System)：</span>從飛船推進的「藍色尾焰」、隕石劃過的「燃燒軌跡」，到碰撞時的「高能爆破火花」，提供絕佳的重擊回饋 (Juiciness)。</li>
+                        <li><span class="highlight">濾鏡與字體工程：</span>字體採用 "Orbitron" + "Chakra Petch"，搭配 Glitch 故障動畫特效，在
+                            Game Over 時視覺衝擊力十足。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Slide 4: 道具系統 -->
+            <div class="slide" id="slide-3">
+                <div class="content-card">
+                    <h2>POWER-UPS // 戰術增幅道具</h2>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">
+                        在極限圖存中，隨機出現的道具將成為你逆轉局勢的關鍵。我們設計了三款改變戰局的核心能力：</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; text-align: center;">
+                        <div class="icon-box" style="padding: 1.5rem;">
+                            <div
+                                style="color: var(--neon-blue); font-size: 2.5rem; text-shadow: 0 0 15px var(--neon-blue);">
+                                ⛨</div>
+                            <h3 style="color: #fff; font-family: 'Orbitron'; margin: 10px 0;">SHIELD</h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">啟動能量光環，免除一次致命碰撞。破盾時會引發保護性衝擊波震動。</p>
+                        </div>
+
+                        <div class="icon-box" style="padding: 1.5rem;">
+                            <div
+                                style="color: var(--neon-purple); font-size: 2.5rem; text-shadow: 0 0 15px var(--neon-purple);">
+                                ⌚</div>
+                            <h3 style="color: #fff; font-family: 'Orbitron'; margin: 10px 0;">TIME WARP</h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">全畫面進入紫色扭曲維度，降低隕石與背景流速長達 10 秒，換取喘息空間。
+                            </p>
+                        </div>
+
+                        <div class="icon-box" style="padding: 1.5rem;">
+                            <div style="color: #fcee0a; font-size: 2.5rem; text-shadow: 0 0 15px #fcee0a;">⚠</div>
+                            <h3 style="color: #fff; font-family: 'Orbitron'; margin: 10px 0;">CLEAR BOMB</h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">釋放高能脈衝引爆畫面內所有隕石，並同時獲得額外 50 秒的獎勵分數。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: 商業潛力 -->
+            <div class="slide" id="slide-4">
+                <div class="content-card">
+                    <h2 style="color: var(--neon-red); border-color: var(--neon-red);">MARKET POTENTIAL // 商業化與未來展望</h2>
+                    <div class="split-layout">
+                        <div>
+                            <ul>
+                                <li><span class="highlight">跨平台無縫移植：</span>HTML5/Canvas 架構可以輕易封裝成 WebView 放到 iOS/Android
+                                    手機雙平台上。結合手指觸控拖曳 (已實作基礎) 可成為殺時間神作。</li>
+                                <li><span class="highlight">社群與排行榜擴充：</span>將 High Score
+                                    接上伺服器，推出「每週全球百大排名榜」，增加玩家炫耀與好勝的動機。</li>
+                                <li><span class="highlight">微交易與客製化 (Monetization)：</span>利用遊戲內獲得的代幣或 IAP (應用內購買)解鎖「飛船造型
+                                    (Skins)」、「隕石樣式」及「特殊的尾焰光影特效」。</li>
+                            </ul>
+                        </div>
+                        <div
+                            style="background: rgba(255,0,60,0.05); border: 1px solid rgba(255,0,60,0.2); padding: 2rem; border-radius: 10px;text-align: center;">
+                            <h3 style="color: var(--neon-red); font-family:'Orbitron';">READY TO SHIP</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                                本作開發已達 MVP (最小可行性產品) 標準，具備極高的完工水平。只需整合廣告 SDK 或計費 API，即可快速投入市場測試變現能力。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 底部控制器 -->
+        <div class="controls">
+            <button class="nav-btn" onclick="scrollPrev()">&lt;</button>
+            <div class="dot active" onclick="scrollToSlide(0)"></div>
+            <div class="dot" onclick="scrollToSlide(1)"></div>
+            <div class="dot" onclick="scrollToSlide(2)"></div>
+            <div class="dot" onclick="scrollToSlide(3)"></div>
+            <div class="dot" onclick="scrollToSlide(4)"></div>
+            <button class="nav-btn" onclick="scrollNext()">&gt;</button>
+        </div>
+
+        <script>
+            const container = document.getElementById('slidesContainer');
+            const dots = document.querySelectorAll('.dot');
+            const numSlides = dots.length;
+
+            // 監聽滾動更新小圓點
+            container.addEventListener('scroll', () => {
+                const slideWidth = window.innerWidth;
+                const currentIndex = Math.round(container.scrollLeft / slideWidth);
+
+                dots.forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            });
+
+            function scrollToSlide(index) {
+                container.scrollTo({
+                    left: index * window.innerWidth,
+                    behavior: 'smooth'
+                });
+            }
+
+            function scrollNext() {
+                const slideWidth = window.innerWidth;
+                const currentIndex = Math.floor((container.scrollLeft + 10) / slideWidth);
+                if (currentIndex < numSlides - 1) {
+                    scrollToSlide(currentIndex + 1);
+                }
+            }
+
+            function scrollPrev() {
+                const slideWidth = window.innerWidth;
+                const currentIndex = Math.ceil((container.scrollLeft - 10) / slideWidth);
+                if (currentIndex > 0) {
+                    scrollToSlide(currentIndex - 1);
+                }
+            }
+
+            // 鍵盤左右鍵切換
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    scrollNext();
+                } else if (e.key === 'ArrowLeft') {
+                    scrollPrev();
+                }
+            });
+        </script>
+</body>
+
+</html>
