@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星際閃避：霓虹覺醒</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <div class="ui-layer">
+                <div class="top-bar">
+                    <div class="score-board glass-panel">
+                        <div class="score-item">
+                            <span class="label">TIME SURVIVED</span>
+                            <span id="score" class="glowing-text">0</span>
+                        </div>
+                        <div class="score-separator"></div>
+                        <div class="score-item">
+                            <span class="label">HIGH METRICS</span>
+                            <span id="highScore">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="powerups-container">
+                    <div id="status-shield" class="status-indicator hidden">
+                        <div class="icon shield-icon"></div>
+                        <span class="status-text">SHIELD ACTIVE</span>
+                    </div>
+                    <div id="status-time" class="status-indicator hidden">
+                        <div class="icon time-icon"></div>
+                        <span class="status-text">TIME WARP <span id="timeWarpBar"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <canvas id="gameCanvas" width="600" height="800"></canvas>
+
+            <div id="gameOverScreen" class="overlay hidden glass-panel-dark">
+                <div class="glitch-wrapper">
+                    <h1 class="glitch" data-text="SYSTEM FAILURE">SYSTEM FAILURE</h1>
+                </div>
+                <div class="stats-box">
+                    <p class="stats-label">SURVIVAL TIME</p>
+                    <p class="stats-value"><span id="finalScore">0</span> SEC</p>
+                </div>
+                <button id="restartBtn" class="neon-btn danger">REBOOT SEQUENCE</button>
+            </div>
+
+            <div id="startScreen" class="overlay glass-panel-dark">
+                <h1 class="title-glow">NEON DODGE</h1>
+                <div class="instructions">
+                    <div class="inst-item">
+                        <span class="key">⌨️</span>
+                        <span>WASD to Move</span>
+                    </div>
+                    <div class="inst-item">
+                        <span class="power-dot shield-dot"></span>
+                        <span>Blue: Shield</span>
+                    </div>
+                    <div class="inst-item">
+                        <span class="power-dot time-dot"></span>
+                        <span>Purple: Time Slow</span>
+                    </div>
+                    <div class="inst-item">
+                        <span class="power-dot bomb-dot"></span>
+                        <span>Yellow: Clear Screen</span>
+                    </div>
+                </div>
+                <button id="startBtn" class="neon-btn primary">ENGAGE THRUSTERS</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
